@@ -675,7 +675,7 @@ mod tests {
 
     #[test]
     fn parse_byte_string_indefinite() -> Result<()> {
-        let input = b"\x5f\x43\x01\x02\x03\xff\x00";
+        let input = b"\x5f\x43\x01\x02\x03\x42\x04\x05\xff\x00";
         let expected = Node::new(vec![0x5f])
             .with_comment("bstr(*)".to_string())
             .with_children(vec![
@@ -684,6 +684,11 @@ mod tests {
                     .with_child(
                         Node::new(vec![0x01, 0x02, 0x03])
                             .with_comment("\"\\x01\\x02\\x03\"".to_string()),
+                    ),
+                Node::new(vec![0x42])
+                    .with_comment("bstr(2)".to_string())
+                    .with_child(
+                        Node::new(vec![0x04, 0x05]).with_comment("\"\\x04\\x05\"".to_string()),
                     ),
                 Node::new(vec![0xff]).with_comment("break".to_string()),
             ]);
@@ -782,7 +787,7 @@ mod tests {
 
     #[test]
     fn parse_text_string_indefinite() -> Result<()> {
-        let input = b"\x7f\x63\x61\x62\x63\xff\x00";
+        let input = b"\x7f\x63\x61\x62\x63\x62\x64\x65\xff\x00";
         let expected = Node::new(vec![0x7f])
             .with_comment("tstr(*)".to_string())
             .with_children(vec![
@@ -791,6 +796,9 @@ mod tests {
                     .with_child(
                         Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string()),
                     ),
+                Node::new(vec![0x62])
+                    .with_comment("tstr(2)".to_string())
+                    .with_child(Node::new(vec![0x64, 0x65]).with_comment("\"de\"".to_string())),
                 Node::new(vec![0xff]).with_comment("break".to_string()),
             ]);
         let (input, actual) = super::cbor_object(input)?;
