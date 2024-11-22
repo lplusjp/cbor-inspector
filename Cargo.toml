@@ -1,0 +1,14 @@
+[package]
+name = "cbor-inspector"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.93"
+bstr = "1.11.0"
+clap = { version = "4.5.21", features = ["derive"] }
+half = "2.4.1"
+nom = "7.1.3"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
