@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 const COMMENT_POSITION: usize = 40;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -34,8 +36,8 @@ impl Node {
         self
     }
 
-    pub fn with_comment(mut self, comment: String) -> Self {
-        self.comment = Some(comment);
+    pub fn with_comment<'a, T: Into<Cow<'a, str>>>(mut self, comment: T) -> Self {
+        self.comment = Some(comment.into().into_owned());
         self
     }
 
@@ -138,7 +140,7 @@ mod tests {
     #[test]
     fn write_1() {
         let tree = Node::new(vec![0x01, 0xff])
-            .with_comment(String::from("comment 1"))
+            .with_comment("comment 1")
             .with_children(vec![
                 Node::new(vec![0x02])
                     .with_more_bytes(vec![0xff, 0xff])
