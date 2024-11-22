@@ -98,8 +98,8 @@ fn unsigned_or_negative_integer(b: u8) -> impl Fn(&[u8]) -> IResult<&[u8], Node>
             _ => None,
         };
         let (input, actual_value) = match major_type {
-            MAJOR_UNSIGNED_INTEGER => (input, value.map(|v| v as i64)),
-            MAJOR_NEGATIVE_INTEGER => (input, value.map(|v| -(v as i64) - 1)),
+            MAJOR_UNSIGNED_INTEGER => (input, value.map(|v| v as i128)),
+            MAJOR_NEGATIVE_INTEGER => (input, value.map(|v| -(v as i128) - 1)),
             // unreachable safety: when major_type is not unsigned or negative, already failed
             _ => unreachable!(),
         };
@@ -589,6 +589,23 @@ mod tests {
         let expected_value = -0x8000000000000000i64;
         let expected = Node::new(vec![0x3b])
             .with_more_bytes(vec![0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff])
+            .with_comment(format!(
+                "{}({:#x}) = {}",
+                "negative", expected_inner_value, expected_value
+            ));
+        let (input, actual) = super::cbor_object(input)?;
+        assert_eq!(input, b"\x00");
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn parse_negative_integer_8_bytes_min() -> Result<()> {
+        let input = b"\x3b\xff\xff\xff\xff\xff\xff\xff\xff\x00";
+        let expected_inner_value = 0xffffffffffffffffu64;
+        let expected_value = -0x10000000000000000i128;
+        let expected = Node::new(vec![0x3b])
+            .with_more_bytes(vec![0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff])
             .with_comment(format!(
                 "{}({:#x}) = {}",
                 "negative", expected_inner_value, expected_value
