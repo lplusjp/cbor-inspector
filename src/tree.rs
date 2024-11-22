@@ -4,7 +4,7 @@ const COMMENT_POSITION: usize = 40;
 pub struct Node {
     bytes: Vec<u8>,
     more_bytes: Vec<u8>,
-    comment: String,
+    comment: Option<String>,
     children: Vec<Node>,
     embedded: bool,
 }
@@ -19,11 +19,11 @@ fn _write_indent(indent: usize, output: &mut String) -> usize {
 }
 
 impl Node {
-    pub fn new(bytes: Vec<u8>, comment: String) -> Self {
+    pub fn new(bytes: Vec<u8>) -> Self {
         Self {
             bytes,
             more_bytes: vec![],
-            comment,
+            comment: None,
             children: vec![],
             embedded: false,
         }
@@ -31,6 +31,11 @@ impl Node {
 
     pub fn with_more_bytes(mut self, more_bytes: Vec<u8>) -> Self {
         self.more_bytes = more_bytes;
+        self
+    }
+
+    pub fn with_comment(mut self, comment: String) -> Self {
+        self.comment = Some(comment);
         self
     }
 
@@ -92,7 +97,7 @@ impl Node {
             });
         }
 
-        if !self.comment.is_empty() {
+        if let Some(comment) = &self.comment {
             if position < comment_position - 2 {
                 for _ in 0..(comment_position - position) {
                     output.push(' ');
@@ -101,7 +106,7 @@ impl Node {
                 output.push_str("  ");
             }
             output.push_str("-- ");
-            output.push_str(&self.comment);
+            output.push_str(comment);
         }
         output.push('\n');
         for child in &self.children {
@@ -132,16 +137,27 @@ mod tests {
 
     #[test]
     fn write_1() {
-        let tree = Node::new(vec![0x01, 0xff], String::from("comment 1")).with_children(vec![
-            Node::new(vec![0x02], String::from("comment 1-1"))
-                .with_more_bytes(vec![0xff, 0xff])
-                .with_children(vec![Node::new(vec![0x03], String::from("comment 1-1-1"))]),
-            Node::new(vec![0x04], String::from("comment 1-2"))
-                .mark_embedded()
-                .with_children(vec![Node::new(vec![0x05], String::from("comment 1-2-1"))]),
-            Node::new(vec![0x06], String::from("comment 1-3"))
-                .with_children(vec![Node::new(vec![0x07], String::from("comment 1-3-1"))]),
-        ]);
+        let tree = Node::new(vec![0x01, 0xff])
+            .with_comment(String::from("comment 1"))
+            .with_children(vec![
+                Node::new(vec![0x02])
+                    .with_more_bytes(vec![0xff, 0xff])
+                    .with_comment(String::from("comment 1-1"))
+                    .with_children(vec![
+                        Node::new(vec![0x03]).with_comment(String::from("comment 1-1-1"))
+                    ]),
+                Node::new(vec![0x04])
+                    .with_comment(String::from("comment 1-2"))
+                    .mark_embedded()
+                    .with_children(vec![
+                        Node::new(vec![0x05]).with_comment(String::from("comment 1-2-1"))
+                    ]),
+                Node::new(vec![0x06])
+                    .with_comment(String::from("comment 1-3"))
+                    .with_children(vec![
+                        Node::new(vec![0x07]).with_comment(String::from("comment 1-3-1"))
+                    ]),
+            ]);
 
         let expected = vec![
             "01ff        -- comment 1",
@@ -164,10 +180,12 @@ mod tests {
 
     #[test]
     fn write_2() {
-        let tree = Node::new(vec![0x01, 0xff], String::from("comment 1")).with_children(vec![
-            Node::new(vec![0xff].repeat(50), String::from("comment 1-1")),
-            Node::new(vec![0x02], String::from("comment 1-2")),
-        ]);
+        let tree = Node::new(vec![0x01, 0xff])
+            .with_comment(String::from("comment 1"))
+            .with_children(vec![
+                Node::new(vec![0xff].repeat(50)).with_comment(String::from("comment 1-1")),
+                Node::new(vec![0x02]).with_comment(String::from("comment 1-2")),
+            ]);
 
         let expected = vec![
             "01ff                                    -- comment 1",
