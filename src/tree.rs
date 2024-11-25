@@ -56,10 +56,6 @@ impl Node {
         self
     }
 
-    pub fn bytes(&self) -> &[u8] {
-        &self.bytes
-    }
-
     fn calculate_comment_position(&self, indent: usize) -> usize {
         let mut comment_position = indent * 3
             + self.bytes.len() * 2

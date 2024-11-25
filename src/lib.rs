@@ -1,6 +1,19 @@
+mod cbor_object;
 mod cbor_parser;
 mod hex_parser;
 mod tree;
+mod type_array;
+mod type_byte_string;
+mod type_common;
+mod type_map;
+mod type_negative;
+mod type_simple_or_float;
+mod type_tag;
+mod type_text_string;
+mod type_unsigned;
+
+#[cfg(test)]
+mod test_parse_cbor_and_build_tree;
 
 use std::fmt::Write;
 use std::fs;
@@ -10,6 +23,7 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::Parser;
 
+use crate::cbor_object::ToTree;
 use crate::cbor_parser::parse_cbor;
 use crate::hex_parser::parse_hex;
 
@@ -51,10 +65,12 @@ pub fn run() -> Result<()> {
         }
     };
 
-    let Ok((rest, cbor_tree)) = parse_cbor(&bytes_content) else {
+    let Ok((rest, object)) = parse_cbor(&bytes_content) else {
         eprintln!("Error parsing CBOR data");
         std::process::exit(1);
     };
+
+    let cbor_tree = object.into_tree();
 
     let mut output = String::new();
     cbor_tree.write(&mut output);
