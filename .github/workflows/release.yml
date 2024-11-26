@@ -49,11 +49,13 @@ jobs:
       run: cargo build --release --target ${{ matrix.job.target }}
 
     - name: Generate licenses file
+      shell: bash
       run: |
         echo 'targets = ["${{ matrix.job.target }}"]' >> about.toml
         cargo about generate -o LICENSES.html about.hbs
 
     - name: Archive artifacts
+      shell: bash
       run: |
         mkdir -p dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}
         cp target/${{ matrix.job.target }}/release/cbor-inspector LICENSES.html dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/
