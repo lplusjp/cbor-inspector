@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-Edition%202021-orange)](https://www.rust-lang.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](#contributing)
 
 This tool is designed to parse and display data encoded in CBOR (Concise Binary Object Representation) format locally, without transmitting any data outside the PC. CBOR is a highly efficient binary data serialization format defined by RFC 8949. It is widely used in applications requiring compact and lightweight data representation, such as IoT (Internet of Things) devices, mobile apps, and real-time communication systems.
 
