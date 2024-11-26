@@ -54,14 +54,16 @@ jobs:
         echo 'targets = ["${{ matrix.job.target }}"]' >> about.toml
         cargo about generate -o LICENSES.html about.hbs
 
-    - name: Archive artifacts (tar.gz)
-      if: ${{ !contains(matrix.job.target, '-windows-') }}
+    - name: Prepare artifacts
       shell: bash
       run: |
         mkdir -p dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}
         cp target/${{ matrix.job.target }}/release/cbor-inspector LICENSES.html dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/
-        cd dist/
-        tar zcvf cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}.tar.gz cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/
+
+    - name: Archive artifacts (tar.gz)
+      if: ${{ !contains(matrix.job.target, '-windows-') }}
+      working-directory: dist/
+      run: tar zcvf cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}.tar.gz cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/
 
     - name: Upload artifacts (tar.gz)
       if: ${{ !contains(matrix.job.target, '-windows-') }}
@@ -71,15 +73,12 @@ jobs:
 
     - name: Archive artifacts (zip)
       if: ${{ contains(matrix.job.target, '-windows-') }}
-      shell: bash
-      run: |
-        mkdir -p dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}
-        cp target/${{ matrix.job.target }}/release/cbor-inspector LICENSES.html dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/
-        cd dist/
-        zip -r cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}.zip cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/
+      shell: powershell
+      working-directory: dist/
+      run: Compress-Archive -Path cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}/ -Destination cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}.zip
 
     - name: Upload artifacts (zip)
-      if: ${{ !contains(matrix.job.target, '-windows-') }}
+      if: ${{ contains(matrix.job.target, '-windows-') }}
       uses: softprops/action-gh-release@v2
       with:
         files: dist/cbor-inspector-${{ github.ref_name }}-${{ matrix.job.target }}.zip
