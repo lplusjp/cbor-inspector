@@ -2,6 +2,8 @@
 name = "cbor-inspector"
 version = "0.1.0"
 edition = "2021"
+readme = "README.md"
+repository = "https://github.com/lplusjp/cbor-inspector"
 license = "MIT"
 
 [dependencies]
