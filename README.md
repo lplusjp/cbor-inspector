@@ -25,7 +25,7 @@ Without any options, cbor-inspector reads CBOR data and writes the tree structur
 $ cbor-inspector < cbor.bin
 82          -- array(0x2 = 2)
    01       -- unsigned(0x1) = 1
-   62       -- tstr(2)
+   62       -- tstr(0x2 = 2)
       4142  -- "AB"
 ```
 
@@ -37,7 +37,7 @@ $ cbor-inspector --hex
 ^D
 82          -- array(0x2 = 2)
    01       -- unsigned(0x1) = 1
-   62       -- tstr(2)
+   62       -- tstr(0x2 = 2)
       4142  -- "AB"
 ```
 

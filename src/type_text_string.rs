@@ -25,7 +25,7 @@ impl TextString {
 
 impl ToTree for TextString {
     fn into_tree(self) -> Node {
-        let comment = format!("tstr({})", self.value.len());
+        let comment = format!("tstr({:#x} = {})", self.value.len(), self.value.len());
         let payload_comment = format!("{:?}", self.value.as_bstr().to_str_lossy());
         let payload_node = Node::new(self.value.to_owned()).with_comment(payload_comment);
         self.parsed_bytes

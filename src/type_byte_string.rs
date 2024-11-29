@@ -25,7 +25,7 @@ impl ByteString {
 
 impl ToTree for ByteString {
     fn into_tree(self) -> Node {
-        let comment = format!("bstr({})", self.value.len());
+        let comment = format!("bstr({:#x} = {})", self.value.len(), self.value.len());
         let payload_comment = format!("\"{}\"", self.value.escape_bytes());
         let payload_node = Node::new(self.value.to_owned()).with_comment(payload_comment);
         self.parsed_bytes
@@ -93,7 +93,7 @@ impl ToTree for ByteStringWithEmbedded {
             raw_value,
             value,
         } = self;
-        let comment = format!("bstr({})", raw_value.len());
+        let comment = format!("bstr({:#x} = {})", raw_value.len(), raw_value.len());
         parsed_bytes
             .into_node()
             .with_comment(comment)

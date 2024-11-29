@@ -178,7 +178,7 @@ fn parse_negative_integer_8_bytes_min() -> Result<()> {
 fn parse_byte_string_short() -> Result<()> {
     let input = b"\x43\x01\x02\x03\x00";
     let expected = Node::new(vec![0x43])
-        .with_comment("bstr(3)".to_string())
+        .with_comment("bstr(0x3 = 3)".to_string())
         .with_child(
             Node::new(vec![0x01, 0x02, 0x03]).with_comment("\"\\x01\\x02\\x03\"".to_string()),
         );
@@ -194,7 +194,7 @@ fn parse_byte_string_more_bytes_1() -> Result<()> {
     let input = b"\x58\x03\x01\x02\x03\x00";
     let expected = Node::new(vec![0x58])
         .with_more_bytes(vec![0x03])
-        .with_comment("bstr(3)".to_string())
+        .with_comment("bstr(0x3 = 3)".to_string())
         .with_child(
             Node::new(vec![0x01, 0x02, 0x03]).with_comment("\"\\x01\\x02\\x03\"".to_string()),
         );
@@ -210,7 +210,7 @@ fn parse_byte_string_more_bytes_2() -> Result<()> {
     let input = b"\x59\x00\x03\x01\x02\x03\x00";
     let expected = Node::new(vec![0x59])
         .with_more_bytes(vec![0x00, 0x03])
-        .with_comment("bstr(3)".to_string())
+        .with_comment("bstr(0x3 = 3)".to_string())
         .with_child(
             Node::new(vec![0x01, 0x02, 0x03]).with_comment("\"\\x01\\x02\\x03\"".to_string()),
         );
@@ -226,7 +226,7 @@ fn parse_byte_string_more_bytes_4() -> Result<()> {
     let input = b"\x5a\x00\x00\x00\x03\x01\x02\x03\x00";
     let expected = Node::new(vec![0x5a])
         .with_more_bytes(vec![0x00, 0x00, 0x00, 0x03])
-        .with_comment("bstr(3)".to_string())
+        .with_comment("bstr(0x3 = 3)".to_string())
         .with_child(
             Node::new(vec![0x01, 0x02, 0x03]).with_comment("\"\\x01\\x02\\x03\"".to_string()),
         );
@@ -242,7 +242,7 @@ fn parse_byte_string_more_bytes_8() -> Result<()> {
     let input = b"\x5b\x00\x00\x00\x00\x00\x00\x00\x03\x01\x02\x03\x00";
     let expected = Node::new(vec![0x5b])
         .with_more_bytes(vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03])
-        .with_comment("bstr(3)".to_string())
+        .with_comment("bstr(0x3 = 3)".to_string())
         .with_child(
             Node::new(vec![0x01, 0x02, 0x03]).with_comment("\"\\x01\\x02\\x03\"".to_string()),
         );
@@ -260,13 +260,13 @@ fn parse_byte_string_indefinite() -> Result<()> {
         .with_comment("bstr(*)".to_string())
         .with_children(vec![
             Node::new(vec![0x43])
-                .with_comment("bstr(3)".to_string())
+                .with_comment("bstr(0x3 = 3)".to_string())
                 .with_child(
                     Node::new(vec![0x01, 0x02, 0x03])
                         .with_comment("\"\\x01\\x02\\x03\"".to_string()),
                 ),
             Node::new(vec![0x42])
-                .with_comment("bstr(2)".to_string())
+                .with_comment("bstr(0x2 = 2)".to_string())
                 .with_child(Node::new(vec![0x04, 0x05]).with_comment("\"\\x04\\x05\"".to_string())),
             Node::new(vec![0xff]).with_comment("break".to_string()),
         ]);
@@ -281,7 +281,7 @@ fn parse_byte_string_indefinite() -> Result<()> {
 fn parse_byte_string_embedded() -> Result<()> {
     let input = b"\x46\xb8\x02\x01\x02\x03\x04\x00";
     let expected = Node::new(vec![0x46])
-        .with_comment("bstr(6)".to_string())
+        .with_comment("bstr(0x6 = 6)".to_string())
         .with_child(
             Node::new(vec![0xb8])
                 .with_more_bytes(vec![0x02])
@@ -305,7 +305,7 @@ fn parse_byte_string_embedded() -> Result<()> {
 fn parse_text_string_short() -> Result<()> {
     let input = b"\x63\x61\x62\x63\x00";
     let expected = Node::new(vec![0x63])
-        .with_comment("tstr(3)".to_string())
+        .with_comment("tstr(0x3 = 3)".to_string())
         .with_child(Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string()));
     let (input, object) = parse_cbor(input)?;
     assert_eq!(input, b"\x00");
@@ -319,7 +319,7 @@ fn parse_text_string_more_bytes_1() -> Result<()> {
     let input = b"\x78\x03\x61\x62\x63\x00";
     let expected = Node::new(vec![0x78])
         .with_more_bytes(vec![0x03])
-        .with_comment("tstr(3)".to_string())
+        .with_comment("tstr(0x3 = 3)".to_string())
         .with_child(Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string()));
     let (input, object) = parse_cbor(input)?;
     assert_eq!(input, b"\x00");
@@ -333,7 +333,7 @@ fn parse_text_string_more_bytes_2() -> Result<()> {
     let input = b"\x79\x00\x03\x61\x62\x63\x00";
     let expected = Node::new(vec![0x79])
         .with_more_bytes(vec![0x00, 0x03])
-        .with_comment("tstr(3)".to_string())
+        .with_comment("tstr(0x3 = 3)".to_string())
         .with_child(Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string()));
     let (input, object) = parse_cbor(input)?;
     assert_eq!(input, b"\x00");
@@ -347,7 +347,7 @@ fn parse_text_string_more_bytes_4() -> Result<()> {
     let input = b"\x7a\x00\x00\x00\x03\x61\x62\x63\x00";
     let expected = Node::new(vec![0x7a])
         .with_more_bytes(vec![0x00, 0x00, 0x00, 0x03])
-        .with_comment("tstr(3)".to_string())
+        .with_comment("tstr(0x3 = 3)".to_string())
         .with_child(Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string()));
     let (input, object) = parse_cbor(input)?;
     assert_eq!(input, b"\x00");
@@ -361,7 +361,7 @@ fn parse_text_string_more_bytes_8() -> Result<()> {
     let input = b"\x7b\x00\x00\x00\x00\x00\x00\x00\x03\x61\x62\x63\x00";
     let expected = Node::new(vec![0x7b])
         .with_more_bytes(vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03])
-        .with_comment("tstr(3)".to_string())
+        .with_comment("tstr(0x3 = 3)".to_string())
         .with_child(Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string()));
     let (input, object) = parse_cbor(input)?;
     assert_eq!(input, b"\x00");
@@ -377,10 +377,10 @@ fn parse_text_string_indefinite() -> Result<()> {
         .with_comment("tstr(*)".to_string())
         .with_children(vec![
             Node::new(vec![0x63])
-                .with_comment("tstr(3)".to_string())
+                .with_comment("tstr(0x3 = 3)".to_string())
                 .with_child(Node::new(vec![0x61, 0x62, 0x63]).with_comment("\"abc\"".to_string())),
             Node::new(vec![0x62])
-                .with_comment("tstr(2)".to_string())
+                .with_comment("tstr(0x2 = 2)".to_string())
                 .with_child(Node::new(vec![0x64, 0x65]).with_comment("\"de\"".to_string())),
             Node::new(vec![0xff]).with_comment("break".to_string()),
         ]);
