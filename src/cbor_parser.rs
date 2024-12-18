@@ -56,18 +56,22 @@ fn parse_additional_info_value(
         let (input, more_bytes) = take(more_bytes_length)(input)?;
         let additional_info_value = match argument {
             0..ADDITIONAL_INFO_VALUE_FOLLOWED_BY_1_BYTE => {
-                AdditionalInfoValue::Value(argument as u64)
+                AdditionalInfoValue::Value(argument.into())
             }
             ADDITIONAL_INFO_VALUE_FOLLOWED_BY_1_BYTE => {
-                AdditionalInfoValue::Value(more_bytes[0] as u64)
+                AdditionalInfoValue::Value(more_bytes[0].into())
             }
             ADDITIONAL_INFO_VALUE_FOLLOWED_BY_2_BYTES => {
                 // unwrap safety: more_bytes is 2 bytes
-                AdditionalInfoValue::Value(u16::from_be_bytes(more_bytes.try_into().unwrap()) as u64)
+                AdditionalInfoValue::Value(
+                    u16::from_be_bytes(more_bytes.try_into().unwrap()).into(),
+                )
             }
             ADDITIONAL_INFO_VALUE_FOLLOWED_BY_4_BYTES => {
                 // unwrap safety: more_bytes is 4 bytes
-                AdditionalInfoValue::Value(u32::from_be_bytes(more_bytes.try_into().unwrap()) as u64)
+                AdditionalInfoValue::Value(
+                    u32::from_be_bytes(more_bytes.try_into().unwrap()).into(),
+                )
             }
             ADDITIONAL_INFO_VALUE_FOLLOWED_BY_8_BYTES => {
                 // unwrap safety: more_bytes is 8 bytes
@@ -134,7 +138,7 @@ fn byte_string_or_text_string(b: u8) -> impl Fn(&[u8]) -> IResult<&[u8], CborObj
             // TODO: AdditionalInfoValue::Indefinite
             if let AdditionalInfoValue::Value(length) = additional_info_value {
                 if let Ok((input, (embedded_raw, embedded_object))) =
-                    embedded_cbor_object(input, length as usize)
+                    embedded_cbor_object(input, usize::try_from(length).unwrap_or(usize::MAX))
                 {
                     return Ok((
                         input,
@@ -154,7 +158,9 @@ fn byte_string_or_text_string(b: u8) -> impl Fn(&[u8]) -> IResult<&[u8], CborObj
         let object = match additional_info_value {
             AdditionalInfoValue::Value(_) | AdditionalInfoValue::Reserved => {
                 let (input_new, payload) = match additional_info_value {
-                    AdditionalInfoValue::Value(length) => take(length as usize)(input)?,
+                    AdditionalInfoValue::Value(length) => {
+                        take(usize::try_from(length).unwrap_or(usize::MAX))(input)?
+                    }
                     AdditionalInfoValue::Reserved => take(0usize)(input)?,
                     // unreachable safety: In this branch, length is always Value or Reserved
                     _ => unreachable!(),

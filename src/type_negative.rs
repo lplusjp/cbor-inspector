@@ -21,7 +21,7 @@ impl NegativeInteger {
 impl ToTree for NegativeInteger {
     fn into_tree(self) -> Node {
         let comment = match self.parsed_bytes.additional_info_value {
-            AdditionalInfoValue::Value(x) => format!("negative({:#x}) = {}", x, -1 - (x as i128)),
+            AdditionalInfoValue::Value(x) => format!("negative({:#x}) = {}", x, -1 - i128::from(x)),
             _ => "negative(?)".to_string(),
         };
         self.parsed_bytes.into_node().with_comment(comment)
